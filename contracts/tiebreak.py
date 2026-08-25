@@ -63,7 +63,6 @@ RELATIONSHIP TO CROSSCHECK
 """
 
 from genlayer import *
-import typing
 from dataclasses import dataclass
 
 

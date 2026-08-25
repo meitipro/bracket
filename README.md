@@ -213,7 +213,7 @@ pytest tests/ -q
 ```
 
 <!-- measured:tests -->
-`pytest tests/ -q` reports **445 passed, 1 skipped**, and every one of the **58** mutations below is caught.
+`pytest tests/ -q` reports **452 passed, 1 skipped**, and every one of the **58** mutations below is caught.
 <!-- /measured:tests -->
 
 Nothing else is needed: no Studio, no network, no API key. A reviewer with two

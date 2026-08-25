@@ -47,7 +47,6 @@ WHY THIS IS NOT A THIN LLM WRAPPER
 """
 
 from genlayer import *
-import typing
 from dataclasses import dataclass
 
 

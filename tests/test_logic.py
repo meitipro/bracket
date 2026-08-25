@@ -727,3 +727,39 @@ class TestSharedHelpersAgree:
     def test_parse_scores_is_identical_in_slate_and_cutline(self):
         for text, n in [("1|2", 2), ("1|nan", 2), ("1|2|3", 2), ("inf|1", 2)]:
             assert SL["parse_scores"](text, n) == CU["parse_scores"](text, n)
+
+
+class TestClosedVocabularies:
+    """Each contract declares its vocabulary as a constant. Bind it to the
+    function, or the constant is documentation that nothing enforces."""
+
+    def test_every_bucket_normalise_returns_is_in_BUCKETS(self):
+        for raw in ["accept", "reject", "review", "pass", "fail", "yes", "no",
+                    "", "banana", None, 7, "ACCEPTED", "  Review  "]:
+            assert WI["normalise_bucket"](raw) in WI["BUCKETS"]
+
+    def test_BUCKETS_holds_exactly_the_three_labels(self):
+        assert set(WI["BUCKETS"]) == {"accept", "reject", "review"}
+        assert len(WI["BUCKETS"]) == 3
+
+    def test_every_side_normalise_returns_is_a_known_side(self):
+        for raw in ["a", "b", "first", "second", "", "junk", None, 7]:
+            assert TB["normalise_side"](raw) in (TB["A"], TB["B"], TB["NEITHER"])
+
+    def test_every_verdict_combine_produces_is_in_VERDICTS(self):
+        for f in SIDES + ["junk", ""]:
+            for r in SIDES + ["junk", ""]:
+                assert TB["combine_rounds"](f, r) in TB["VERDICTS"]
+
+    def test_ON_TIE_holds_exactly_the_two_policies(self):
+        assert set(CU["ON_TIE"]) == {"refuse", "expand"}
+
+    def test_parse_closeness_is_identical_in_slate_and_cutline(self):
+        # Both contracts band against this threshold; a disagreement here would
+        # make the same slate settle in one and not the other.
+        for text in ["2.0", "0", "1000", "-1", "nan", "inf", "", "abc", "1e400"]:
+            assert SL["parse_closeness"](text) == CU["parse_closeness"](text)
+
+    def test_parse_order_is_identical_in_slate_and_cutline(self):
+        for text, n in [("0|1", 2), ("1|0", 2), ("0|0", 2), ("x|1", 2), ("0|1|2", 2)]:
+            assert SL["parse_order"](text, n) == CU["parse_order"](text, n)
