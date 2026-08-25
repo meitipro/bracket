@@ -372,10 +372,10 @@ class Contract(gl.Contract):
     def partition(self, batch_id: u256) -> str:
         """"accept|review|reject|accept", in item order, or "" before any run."""
         self._batch(batch_id)
-        t = self._last_triage(int(batch_id))
-        if t is None:
+        tid = self._last_triage(int(batch_id))
+        if tid < 0:
             return ""
-        return str(t.canonical)
+        return str(self.triages[tid].canonical)
 
     @gl.public.view
     def bucket(self, batch_id: u256, item_idx: u256) -> str:
@@ -388,10 +388,10 @@ class Contract(gl.Contract):
         i = int(item_idx)
         if i < 0 or i >= int(b.n_items):
             raise gl.vm.UserError("no such item")
-        t = self._last_triage(int(batch_id))
-        if t is None:
+        tid = self._last_triage(int(batch_id))
+        if tid < 0:
             return ""
-        parts = str(t.canonical).split("|")
+        parts = str(self.triages[tid].canonical).split("|")
         if i >= len(parts):
             return ""
         return parts[i]
@@ -399,9 +399,9 @@ class Contract(gl.Contract):
     @gl.public.view
     def latest(self, batch_id: u256) -> dict:
         b = self._batch(batch_id)
-        t = self._last_triage(int(batch_id))
+        tid = self._last_triage(int(batch_id))
         texts = self._item_texts(int(batch_id))
-        if t is None:
+        if tid < 0:
             return {
                 "triaged": False,
                 "standard": str(b.standard),
@@ -412,11 +412,11 @@ class Contract(gl.Contract):
                 "reasons_are_leader_supplied": True,
                 "at": "",
             }
-        triage_id = self._triage_id(t)
+        t = self.triages[tid]
         rows = []
         for j in range(len(self.labels)):
             lb = self.labels[j]
-            if int(lb.triage_id) != triage_id:
+            if int(lb.triage_id) != tid:
                 continue
             idx = int(lb.item_idx)
             rows.append(
@@ -456,15 +456,16 @@ class Contract(gl.Contract):
                 out.append(str(it.text))
         return out
 
-    def _last_triage(self, batch_id: int):
+    def _last_triage(self, batch_id: int) -> int:
+        """The index of the most recent triage for this parent, or -1.
+
+        An INDEX, deliberately, never the object. A storage object is a
+        view on a slot rather than a copy, and indexing the array builds a
+        fresh view every time, so `self.triages[i] is obj` is always False on a
+        node. Carrying the index instead is the only thing that survives.
+        """
         for j in range(len(self.triages) - 1, -1, -1):
             t = self.triages[j]
             if int(t.batch_id) == batch_id:
-                return t
-        return None
-
-    def _triage_id(self, triage) -> int:
-        for j in range(len(self.triages) - 1, -1, -1):
-            if self.triages[j] is triage:
                 return j
         return -1

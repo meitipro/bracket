@@ -387,16 +387,16 @@ class Contract(gl.Contract):
     def verdict(self, pair_id: u256) -> str:
         """a, b or tied. Empty string when the pair has never been compared."""
         self._pair(pair_id)
-        c = self._last_comparison(int(pair_id))
-        if c is None:
+        cid = self._last_comparison(int(pair_id))
+        if cid < 0:
             return ""
-        return str(c.verdict)
+        return str(self.comparisons[cid].verdict)
 
     @gl.public.view
     def latest(self, pair_id: u256) -> dict:
         p = self._pair(pair_id)
-        c = self._last_comparison(int(pair_id))
-        if c is None:
+        cid = self._last_comparison(int(pair_id))
+        if cid < 0:
             return {
                 "compared": False,
                 "criterion": str(p.criterion),
@@ -407,6 +407,7 @@ class Contract(gl.Contract):
                 "reasons_are_leader_supplied": True,
                 "at": "",
             }
+        c = self.comparisons[cid]
         return {
             "compared": True,
             "criterion": str(p.criterion),
@@ -465,15 +466,18 @@ class Contract(gl.Contract):
             raise gl.vm.UserError("no such pair")
         return self.pairs[i]
 
-    def _last_comparison(self, pair_id: int):
-        """The most recent comparison for this pair, or None.
+    def _last_comparison(self, pair_id: int) -> int:
+        """The index of the most recent comparison for this pair, or -1.
 
         Walks backwards and filters on pair_id. A lookup that ignored the
         parent id would hand back another pair's verdict, correctly formatted,
         with nothing failing anywhere.
+
+        An INDEX, never the record. A storage object is a view on a slot rather
+        than a copy, and indexing the array builds a fresh view every time, so a
+        record handed back here could never be matched against the array again.
         """
         for k in range(len(self.comparisons) - 1, -1, -1):
-            c = self.comparisons[k]
-            if int(c.pair_id) == pair_id:
-                return c
-        return None
+            if int(self.comparisons[k].pair_id) == pair_id:
+                return k
+        return -1

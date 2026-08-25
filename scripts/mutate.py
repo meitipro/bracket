@@ -123,8 +123,8 @@ MUTATIONS = [
     (
         "tiebreak.py",
         "a lookup that ignores the parent id",
-        "            if int(c.pair_id) == pair_id:\n                return c",
-        "            return c",
+        "            if int(self.comparisons[k].pair_id) == pair_id:\n                return k",
+        "            return k",
     ),
     (
         "tiebreak.py",
@@ -227,8 +227,8 @@ MUTATIONS = [
     (
         "slate.py",
         "a lookup that ignores the parent id",
-        "            if int(r.slate_id) == slate_id:\n                return r",
-        "            return r",
+        "            if int(r.slate_id) == slate_id:\n                return k",
+        "            return k",
     ),
     (
         "slate.py",
@@ -307,8 +307,8 @@ MUTATIONS = [
     (
         "cutline.py",
         "a lookup that ignores the parent id",
-        "            if int(s.cutline_id) == cutline_id:\n                return s",
-        "            return s",
+        "            if int(s.cutline_id) == cutline_id:\n                return j",
+        "            return j",
     ),
     (
         "cutline.py",
@@ -393,8 +393,8 @@ MUTATIONS = [
     (
         "winnow.py",
         "a lookup that ignores the parent id",
-        "            if int(t.batch_id) == batch_id:\n                return t",
-        "            return t",
+        "            if int(t.batch_id) == batch_id:\n                return j",
+        "            return j",
     ),
     (
         "winnow.py",

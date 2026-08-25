@@ -199,6 +199,40 @@ class TestShape:
                         "%s: leader_fn reads self.%s" % (name, node.attr)
                     )
 
+    def test_no_storage_object_is_compared_by_identity(self, name):
+        # A storage object is a VIEW on a slot, not a copy. DynArray.__getitem__
+        # builds a fresh view on every access, so `self.rows[i] is obj` is
+        # always False on a node -- and it fails SILENTLY: the lookup returns
+        # "not found", the view returns an empty list, and nothing raises.
+        #
+        # glsim cannot catch this, because its DynArray is a real Python list
+        # where identity holds. Only reading the source can, which is exactly
+        # what the static shape tests are for. Carry an index, never an object.
+        cls = contract_class(name)
+        for node in ast.walk(cls):
+            if not isinstance(node, ast.Compare):
+                continue
+            if not any(isinstance(op, (ast.Is, ast.IsNot)) for op in node.ops):
+                continue
+            for side in [node.left] + list(node.comparators):
+                if isinstance(side, ast.Subscript):
+                    src = ast.unparse(side)
+                    assert not src.startswith("self."), (
+                        "%s: identity comparison against %s" % (name, src)
+                    )
+
+    def test_no_lookup_helper_returns_a_storage_object_it_found_by_scanning(self, name):
+        # The other half of the same rule. A helper that scans a collection and
+        # hands back the record cannot be matched against the collection later.
+        # Every _last_* helper here is annotated -> int and returns an index.
+        cls = contract_class(name)
+        for fn in cls.body:
+            if not isinstance(fn, ast.FunctionDef) or not fn.name.startswith("_last_"):
+                continue
+            assert fn.returns is not None and ast.unparse(fn.returns) == "int", (
+                "%s: %s must return an index, not a record" % (name, fn.name)
+            )
+
     def test_the_block_boundary_carries_flat_strings_only(self, name):
         # THE ONE WITH NO TRACEBACK. A nested mapping or a bool in the return
         # value fails inside the calldata encoder, outside the contract, and the

@@ -457,10 +457,10 @@ class Contract(gl.Contract):
     def order(self, slate_id: u256) -> str:
         """The canonical banded ordering, or "" before any ranking."""
         self._slate(slate_id)
-        r = self._last_ranking(int(slate_id))
-        if r is None:
+        rid = self._last_ranking(int(slate_id))
+        if rid < 0:
             return ""
-        return str(r.canonical)
+        return str(self.rankings[rid].canonical)
 
     @gl.public.view
     def slate(self, slate_id: u256) -> dict:
@@ -476,8 +476,8 @@ class Contract(gl.Contract):
     @gl.public.view
     def latest(self, slate_id: u256) -> dict:
         s = self._slate(slate_id)
-        r = self._last_ranking(int(slate_id))
-        if r is None:
+        rid = self._last_ranking(int(slate_id))
+        if rid < 0:
             return {
                 "ranked": False,
                 "criterion": str(s.criterion),
@@ -488,12 +488,12 @@ class Contract(gl.Contract):
                 "reason_is_leader_supplied": True,
                 "at": "",
             }
-        ranking_id = self._ranking_id(r)
+        r = self.rankings[rid]
         texts = self._item_texts(int(slate_id))
         rows = []
         for k in range(len(self.placements)):
             p = self.placements[k]
-            if int(p.ranking_id) != ranking_id:
+            if int(p.ranking_id) != rid:
                 continue
             idx = int(p.item_idx)
             rows.append(
@@ -535,15 +535,16 @@ class Contract(gl.Contract):
                 out.append(str(it.text))
         return out
 
-    def _last_ranking(self, slate_id: int):
+    def _last_ranking(self, slate_id: int) -> int:
+        """The index of the most recent ranking for this parent, or -1.
+
+        An INDEX, deliberately, never the object. A storage object is a
+        view on a slot rather than a copy, and indexing the array builds a
+        fresh view every time, so `self.rankings[i] is obj` is always False on a
+        node. Carrying the index instead is the only thing that survives.
+        """
         for k in range(len(self.rankings) - 1, -1, -1):
             r = self.rankings[k]
             if int(r.slate_id) == slate_id:
-                return r
-        return None
-
-    def _ranking_id(self, ranking) -> int:
-        for k in range(len(self.rankings) - 1, -1, -1):
-            if self.rankings[k] is ranking:
                 return k
         return -1

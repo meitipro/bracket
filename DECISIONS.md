@@ -230,6 +230,42 @@ three prefixes would be decoration.
 or nothing at all is classified, and the validator disagrees, which forces
 rotation. Agreeing on broken model output would lock bad state.
 
+### The worst bug in the build, and the simulator could not see it
+
+Three contracts looked up their most recent record by scanning the collection
+and returning the **record**, then found its index again by identity:
+
+```python
+for k in range(len(self.rankings) - 1, -1, -1):
+    if self.rankings[k] is ranking:      # always False on a node
+        return k
+```
+
+`DynArray.__getitem__` in the pinned runner ends in
+`self._item_desc.get(items_at, idx * self._item_desc.size)` — it **builds a
+fresh view on every access**. A storage object is a view on a slot, not a copy,
+so two reads of the same index are two different Python objects and `is` is
+never true.
+
+The failure mode is the bad kind. Nothing raises. The lookup returns -1, the
+filter matches nothing, and `latest()` hands back an empty `placements` list
+that looks like a slate nobody ranked. Storage is correct; the view lies about
+it.
+
+`tests/glsim.py` cannot catch this, and no amount of end-to-end testing would
+have: its `DynArray` is a real Python list, where identity holds. Only reading
+the source catches it, which is exactly what the static shape tests are for.
+Two now do:
+
+- `test_no_storage_object_is_compared_by_identity` walks every `is` / `is not`
+  comparison and fails on any subscript of `self.…`
+- `test_no_lookup_helper_returns_a_storage_object_it_found_by_scanning` requires
+  every `_last_*` helper to be annotated `-> int`
+
+Every lookup now carries an index. Tiebreak's was rewritten the same way even
+though it had no identity comparison, because a rule that holds in three files
+and not the fourth is a rule waiting to be broken.
+
 ### A defensive gap the audit found
 
 The first version called `.get()` directly on whatever `exec_prompt` returned.

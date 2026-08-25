@@ -430,17 +430,17 @@ class Contract(gl.Contract):
         handle instead of two.
         """
         self._cutline(cutline_id)
-        s = self._last_selection(int(cutline_id))
-        if s is None:
+        sid = self._last_selection(int(cutline_id))
+        if sid < 0:
             return ""
-        return str(s.canonical)
+        return str(self.selections[sid].canonical)
 
     @gl.public.view
     def latest(self, cutline_id: u256) -> dict:
         cl = self._cutline(cutline_id)
-        s = self._last_selection(int(cutline_id))
+        sid = self._last_selection(int(cutline_id))
         texts = self._item_texts(int(cutline_id))
-        if s is None:
+        if sid < 0:
             return {
                 "selected": False,
                 "criterion": str(cl.criterion),
@@ -453,11 +453,11 @@ class Contract(gl.Contract):
                 "reason_is_leader_supplied": True,
                 "at": "",
             }
-        selection_id = self._selection_id(s)
+        s = self.selections[sid]
         rows = []
         for j in range(len(self.picks)):
             p = self.picks[j]
-            if int(p.selection_id) != selection_id:
+            if int(p.selection_id) != sid:
                 continue
             idx = int(p.item_idx)
             rows.append(
@@ -494,15 +494,16 @@ class Contract(gl.Contract):
                 out.append(str(it.text))
         return out
 
-    def _last_selection(self, cutline_id: int):
+    def _last_selection(self, cutline_id: int) -> int:
+        """The index of the most recent selection for this parent, or -1.
+
+        An INDEX, deliberately, never the object. A storage object is a
+        view on a slot rather than a copy, and indexing the array builds a
+        fresh view every time, so `self.selections[i] is obj` is always False on a
+        node. Carrying the index instead is the only thing that survives.
+        """
         for j in range(len(self.selections) - 1, -1, -1):
             s = self.selections[j]
             if int(s.cutline_id) == cutline_id:
-                return s
-        return None
-
-    def _selection_id(self, selection) -> int:
-        for j in range(len(self.selections) - 1, -1, -1):
-            if self.selections[j] is selection:
                 return j
         return -1
