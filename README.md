@@ -1,22 +1,65 @@
-<p align="left"><img src="brand/lockup.svg" alt="bracket" height="64"></p>
+<div align="center">
 
-# Bracket — four primitives for judgments that come in sets
+<img src="brand/lockup.svg" alt="bracket" height="72">
 
 **When you cannot agree on the score, agree on the shape.**
 
-Two validators will never agree that a thing scores 7.3 rather than 7.6. They
-will agree, easily and repeatedly, that it beats the thing next to it. Every
-contract here takes a fine-grained judgment and collapses it into a coarser
-structure *before* consensus sees it. The structure crosses the boundary; the
-numbers behind it are discarded.
+Four GenLayer Intelligent Contract primitives for judgments that come in sets,
+where what crosses consensus is the structure of a decision and never the
+number behind it.
 
-- **Contracts:** [`tiebreak.py`](contracts/tiebreak.py) · [`slate.py`](contracts/slate.py) · [`cutline.py`](contracts/cutline.py) · [`winnow.py`](contracts/winnow.py)
-- **Tests:** `pip install pytest && pytest tests/ -q` — nothing else to install
-- **Live on studionet:** all four, each with a success and a refusal on chain — [see below](#it-is-live-and-every-refusal-is-on-chain-too)
-- **Specification:** [CONTRACTS.md](CONTRACTS.md)
-- **Decisions and limits:** [DECISIONS.md](DECISIONS.md)
-- **Agreement rules on their own:** [lib/bracket_consensus.py](lib/bracket_consensus.py)
-- **License:** MIT. Copy the agreement rules; that is what they are for.
+[![Built by InferNode](https://img.shields.io/badge/built%20by-InferNode-E0A23C?style=flat-square)](https://x.com/Infer_node)
+[![GenLayer](https://img.shields.io/badge/GenLayer-Intelligent%20Contracts-0C0D10?style=flat-square)](https://genlayer.com)
+[![Live on studionet](https://img.shields.io/badge/studionet-4%20live-1F7A4D?style=flat-square)](#it-is-live-and-every-refusal-is-on-chain-too)
+[![License MIT](https://img.shields.io/badge/license-MIT-232830?style=flat-square)](LICENSE)
+
+</div>
+
+---
+
+## The name
+
+A bracket is two things at once, and this family is both of them. It is the band
+you group into — a tax bracket, a scoring bracket, everything inside it treated
+as the same. And it is the structure you rank with. Every contract here groups
+what it cannot separate rather than pretending to separate it, then publishes the
+grouping instead of the numbers.
+
+The mark is four bars with a bracket closing around all four. Each contract
+carries the same geometry with its own answer inside it.
+
+## Overview
+
+Two validators will never agree that a thing scores 7.3 rather than 7.6. They
+will agree, easily and repeatedly, that it beats the thing next to it.
+
+That is the whole observation. A raw score does not survive the next request, but
+an ordering does. A top-five list does. A three-way triage does. So every contract
+here takes a fine-grained judgment and collapses it into a coarser structure
+**before** consensus ever sees it. The structure crosses the boundary; the numbers
+behind it are discarded.
+
+> **The one idea worth stealing.** Do not ask the network to agree on a
+> measurement. Ask it to agree on a **structure**, and derive the structure
+> deterministically from the measurement. The coarser the structure, the more
+> reliably consensus settles — so choose the coarsest structure your application
+> can actually use.
+
+## Reviewer links
+
+Everything a reviewer needs, in the order it is useful.
+
+| | |
+|---|---|
+| **Verify in two minutes** | `pip install pytest && pytest tests/ -q` — no Studio, no network, no API key |
+| **Flagship 1** | [`contracts/tiebreak.py`](contracts/tiebreak.py) — the atom the other three call |
+| **Flagship 2** | [`contracts/slate.py`](contracts/slate.py) — the ordering, with the ties left in |
+| **The other two** | [`contracts/cutline.py`](contracts/cutline.py) · [`contracts/winnow.py`](contracts/winnow.py) |
+| **Agreement rules alone** | [`lib/bracket_consensus.py`](lib/bracket_consensus.py) — pure, no storage, no model |
+| **Specification** | [CONTRACTS.md](CONTRACTS.md) — purpose, consensus, state, API, reuse, per contract |
+| **Decisions and limits** | [DECISIONS.md](DECISIONS.md) — every bug found, with the error it produced, and what each contract cannot do |
+| **Live on chain** | [four addresses, eight outcomes](#it-is-live-and-every-refusal-is-on-chain-too) |
+| **Tests** | [`tests/`](tests/) — pure rules, static shape, end-to-end, integration |
 
 ---
 
@@ -51,13 +94,6 @@ because the line fell inside a band it had already said it would not split.
 
 ---
 
-## The one idea worth stealing
-
-> Do not ask the network to agree on a measurement. Ask it to agree on a
-> **structure**, and derive the structure deterministically from the
-> measurement. The coarser the structure, the more reliably consensus settles —
-> so choose the coarsest structure your application can actually use.
-
 ## The ladder
 
 Four contracts, in decreasing precision. Each rung asks less of the network than
@@ -79,7 +115,7 @@ One primitive, three compositions.
 
 ---
 
-## Tiebreak — is this difference real?
+## Flagship 1 · Tiebreak — is this difference real?
 
 Decide whether two items are distinguishable under a written criterion, or
 whether any ordering between them would be noise.
@@ -125,7 +161,7 @@ return mine["verdict"] == theirs["verdict"]
 `TIED` is not a failure. It is the network agreeing, precisely, that the
 criterion does not separate these two.
 
-## Slate — an ordering, with the ties left in
+## Flagship 2 · Slate — an ordering, with the ties left in
 
 Order N items against a criterion, collapsing items that cannot be told apart
 into a shared rank. The output is not a list: it is rank 1, rank 2, rank 2,
@@ -351,6 +387,43 @@ no test of its own — and two were defences that a defence in front of them had
 already made unobservable, leaving tests that *could not fail*.
 [DECISIONS.md](DECISIONS.md) records what happened to each, because a test that
 cannot fail is worse than no test.
+
+---
+
+## Repository layout
+
+```
+bracket/
+├── contracts/
+│   ├── tiebreak.py          the atom: one comparison, both presentation orders
+│   ├── slate.py             an ordering, with the ties banded
+│   ├── cutline.py           the top K, membership only
+│   └── winnow.py            accept / reject / review
+├── lib/
+│   └── bracket_consensus.py the agreement rules alone, pure and copyable
+├── tests/
+│   ├── glsim.py             a GenVM stand-in with independent leader and validator worlds
+│   ├── test_logic.py        the pure rules, executed out of the real contract source
+│   ├── test_e2e.py          the contracts executed, plus the static shape tests
+│   └── test_integration.py  against a real Studio, skipped when gltest is absent
+├── scripts/
+│   ├── deploy.sh            lints, deploys, and exercises each contract
+│   ├── mutate.py            breaks every safety property on purpose
+│   └── measure.py           writes the measured counts into this file
+├── brand/
+│   ├── mark.svg  lockup.svg  social.svg  social.png  BRAND.md
+│   └── family/              one mark per contract, same geometry
+├── README.md  CONTRACTS.md  DECISIONS.md  SUBMISSION.md  LICENSE
+└── conftest.py  pytest.ini  requirements-dev.txt  gltest.config.yaml
+```
+
+Four contracts, one shape. Every collection is a top level contract field and
+child records carry a parent id, because a storage dataclass cannot hold a
+collection. Every public parameter is `str`, `u256` or `bool`; collections
+arrive pipe-joined. Every block returns a flat dict of `str`. Every view
+bounds-checks its id and rejects negatives explicitly. Every `raise` is
+`gl.vm.UserError`. [CONTRACTS.md](CONTRACTS.md) has the per-contract detail and
+[DECISIONS.md](DECISIONS.md) says what each rule cost to learn.
 
 ---
 
