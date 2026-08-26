@@ -2,12 +2,28 @@
 
 ## The mark
 
-Four bars of decreasing length, with **two of equal length** and a bracket
-joining them.
+Four bars of decreasing length, with a bracket closing around all of them.
 
-A ranking, and a tie inside it. The tie is the whole family: pretending to
-separate two things that are not separable is exactly where consensus breaks, so
-the mark shows the **refusal** rather than only the order.
+A ranking, held. The bracket is the whole family: every contract here groups
+things that cannot be separated rather than pretending to separate them, so the
+mark shows the **refusal** rather than only the order. It is also where the name
+came from -- a bracket is both a band you group into and a structure you rank
+with, which is exactly what these four do.
+
+### The family
+
+Each contract carries the same geometry with its own answer. There is no second
+hue anywhere: these are four rungs of one ladder, not four products, and a
+different colour would say they were unrelated. What changes is the shape, and
+the chalk stroke in every mark is the thing that contract refuses to do.
+
+| Mark | Geometry | What it says |
+|---|---|---|
+| [`mark.svg`](mark.svg) | four bars, one bracket around all | the catalogue |
+| [`family/tiebreak.svg`](family/tiebreak.svg) | two bars of **equal** length, joined | are these two different at all |
+| [`family/slate.svg`](family/slate.svg) | four descending, the tied pair joined | an ordering with the ties left in |
+| [`family/cutline.svg`](family/cutline.svg) | four descending, one line across | who is above the line |
+| [`family/winnow.svg`](family/winnow.svg) | two piles, one lone chalk mark between | three buckets, the middle one uncertain |
 
 Built on a 100 × 100 grid. Stroke weight 8.5, round caps, corner radius 18. The
 tie bracket is lighter, at 3.5, in chalk rather than the accent, so it reads as
@@ -47,7 +63,7 @@ lowercase.
 
 | File | What it is |
 |---|---|
-| `mark.svg` | the mark alone, 100 × 100 |
+| `mark.svg` | the Bracket mark alone, 100 × 100 |
 | `lockup.svg` | mark plus wordmark |
 | `social.svg` | 1280 × 640 source |
 | `social.png` | export, for Settings → Social preview |

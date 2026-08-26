@@ -1,11 +1,12 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" width="100" height="100" role="img" aria-label="Slate">
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" width="100" height="100" role="img" aria-label="Bracket">
   <rect width="100" height="100" rx="18" fill="#0C0D10"/>
   <g stroke="#E0A23C" stroke-width="8.5" stroke-linecap="round">
-    <line x1="22" y1="28" x2="78" y2="28"/>
-    <line x1="22" y1="46" x2="60" y2="46"/>
-    <line x1="22" y1="60" x2="60" y2="60"/>
-    <line x1="22" y1="78" x2="40" y2="78"/>
+    <line x1="20" y1="26" x2="64" y2="26"/>
+    <line x1="20" y1="44" x2="52" y2="44"/>
+    <line x1="20" y1="58" x2="52" y2="58"/>
+    <line x1="20" y1="76" x2="38" y2="76"/>
   </g>
-  <line x1="66" y1="46" x2="66" y2="60" stroke="#E8E6E1" stroke-width="3.5"
-        stroke-linecap="round" opacity="0.85"/>
+  <path d="M 74 22 L 80 22 L 80 78 L 74 78" fill="none" stroke="#E8E6E1"
+        stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"
+        opacity="0.85"/>
 </svg>
