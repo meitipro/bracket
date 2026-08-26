@@ -7,64 +7,46 @@ lists the full set.
 
 ---
 
-## Before you submit, in order
+## What is already done
 
-1. **Measure, do not estimate.**
+| | |
+|---|---|
+| **Measured, not estimated** | `python scripts/measure.py --write` runs the suite and the full mutation pass and writes both numbers into README.md. It refuses to write anything if the suite is red or a mutation escapes. |
+| **Deployed and exercised** | all four on studionet, through the Studio web interface. No private key ever went into a file. |
+| **A refusal on chain, not only a success** | every contract resolved once and refused once: a tied pair, an undifferentiated slate, a cut inside a tie, a batch too vague to triage. |
+| **Explorer pages checked** | five transactions each — one Deploy and four method calls, every one FINALIZED with a Consensus Result. No failed or abandoned transaction on any page. |
+| **Addresses recorded** | in the README table and in the Links block below. |
 
-   ```bash
-   python scripts/measure.py --write
-   ```
+## What is left
 
-   Runs the suite, runs the full mutation pass, and writes both numbers into
-   README.md. It refuses to write anything if the suite is red or a mutation
-   escapes, so a number in the README is always one that was checked.
-
-2. **Deploy and exercise all four.** Through the Studio web interface at
-   studio.genlayer.com, or `./scripts/deploy.sh studionet` for the CLI route.
-   Never put a private key into a file.
-
-3. **Put a refusal on chain, not only a success.** For each contract run one
-   call that succeeds and one that refuses: a tied pair, an undifferentiated
-   slate, a cut inside a tie, a batch too vague to triage. A contract page
-   showing only successes is a weaker demonstration than one showing the
-   primitive decline to answer — and refusing is what these primitives are for.
-
-4. **Open each explorer page and check it.** Every one must show a Deploy
-   transaction **and** at least one method call with a Consensus Result beside
-   it. A page with only a deploy proves the file compiles and nothing else.
-
-5. **Paste the addresses** into README.md and into this file, replacing every
-   `{address}` placeholder, then push.
-
-6. **Upload `brand/social.png`** under Settings → General → Social preview.
-   GitHub uses it whenever a link to the repository is shared, including inside
-   the submission.
+**Upload `brand/social.png`** under Settings → General → Social preview. GitHub
+has no API for this, so it is the one step that must be done by hand. It is what
+shows when the repository link is pasted into the portal.
 
 ---
 
 ## Title
 
 ```
-Slate: four consensus primitives for judgments that come in sets
+Bracket: four consensus primitives for judgments that come in sets
 ```
 
 ## Notes
 
-Measured at 999 characters with a real address substituted; the box caps at 1000.
+Measured at 918 characters; the box caps at 1000.
 
 ```
-Slate is four composable Intelligent Contract primitives for judgments about SETS rather than single items. The idea: never ask the network to agree on a measurement, ask it to agree on a STRUCTURE derived deterministically from it. Two validators will not agree a thing scores 7.3 not 7.6; they will agree it beats its neighbour. A ladder of decreasing precision. Slate orders N items and bands ties, so consensus is strict_eq on a canonical rank vector, not raw scores. Cutline picks the top K, agreeing only on membership, and declares up front whether an arbitrary cut refuses or expands. Winnow partitions into accept/reject/review, forgiving one boundary item and only through review. Tiebreak is the atom the other three call: one comparison in BOTH presentation orders in a single nondet block, returning TIED when the answer moved. That catches position bias consensus cannot see, because every validator prompts identically. Live at {address} on studionet.
+Bracket is four composable Intelligent Contract primitives for judgments about SETS rather than single items. The idea: never ask the network to agree on a measurement, ask it to agree on a STRUCTURE derived deterministically from it. Two validators will not agree a thing scores 7.3 not 7.6; they will agree it beats its neighbour. A ladder of decreasing precision. Slate orders N items and bands ties, so consensus is strict_eq on a canonical rank vector, not raw scores. Cutline picks the top K, agreeing only on membership, and declares up front whether an arbitrary cut refuses or expands. Winnow partitions into accept/reject/review, forgiving one boundary item and only through review. Tiebreak is the atom the other three call: one comparison in BOTH presentation orders in a single nondet block, returning TIED when the answer moved. All four are live on studionet, each with a success and a refusal on chain.
 ```
 
 ## Links
 
 ```
-GitHub:   https://github.com/meitipro/slate
-Tiebreak: https://github.com/meitipro/slate/blob/main/contracts/tiebreak.py
-Slate:    https://github.com/meitipro/slate/blob/main/contracts/slate.py
-Cutline:  https://github.com/meitipro/slate/blob/main/contracts/cutline.py
-Winnow:   https://github.com/meitipro/slate/blob/main/contracts/winnow.py
-Explorer: https://explorer-studio.genlayer.com/address/{address}
+GitHub:   https://github.com/meitipro/bracket
+Tiebreak: https://explorer-studio.genlayer.com/address/0x9fE538dC6e05b8316Cd9E9FE7a6bBF4667Fe40C4
+Slate:    https://explorer-studio.genlayer.com/address/0x222CD02132a4f158E3C67E8D0757b88aA13A67C9
+Cutline:  https://explorer-studio.genlayer.com/address/0xC4ee53aDfb9569150C7cCfA79590422e2d35b2bB
+Winnow:   https://explorer-studio.genlayer.com/address/0x4D75f5a5505c442f6a781dc05828E0220217E81f
 ```
 
 ---

@@ -9,7 +9,7 @@ The alternative -- copying the rules into the test file -- creates a second copy
 that drifts, and a test that runs a copy of the logic tests nothing about the
 contract. Here, a change to a contract is a change to what these tests run.
 
-lib/slate_consensus.py is a curated reading copy of the same rules. The last
+lib/bracket_consensus.py is a curated reading copy of the same rules. The last
 class in this file asserts it has not drifted from the contracts, because a
 reference copy that quietly disagrees with the thing it documents is worse than
 no reference copy.
@@ -307,13 +307,13 @@ class TestPercentages:
 # ---------------------------------------------------------------------------
 
 class TestLibraryMatchesTheContracts:
-    """lib/slate_consensus.py is documentation that runs. Keep it honest."""
+    """lib/bracket_consensus.py is documentation that runs. Keep it honest."""
 
     @staticmethod
     def lib():
         ns = {}
-        src = (ROOT / "lib" / "slate_consensus.py").read_text(encoding="utf-8")
-        exec(compile(src, "slate_consensus", "exec"), ns)
+        src = (ROOT / "lib" / "bracket_consensus.py").read_text(encoding="utf-8")
+        exec(compile(src, "bracket_consensus", "exec"), ns)
         return ns
 
     def test_normalise_side_agrees(self):

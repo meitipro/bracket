@@ -1,6 +1,6 @@
-<p align="left"><img src="brand/lockup.svg" alt="slate" height="64"></p>
+<p align="left"><img src="brand/lockup.svg" alt="bracket" height="64"></p>
 
-# Slate — four primitives for judgments that come in sets
+# Bracket — four primitives for judgments that come in sets
 
 **When you cannot agree on the score, agree on the shape.**
 
@@ -12,11 +12,42 @@ numbers behind it are discarded.
 
 - **Contracts:** [`tiebreak.py`](contracts/tiebreak.py) · [`slate.py`](contracts/slate.py) · [`cutline.py`](contracts/cutline.py) · [`winnow.py`](contracts/winnow.py)
 - **Tests:** `pip install pytest && pytest tests/ -q` — nothing else to install
-- **Deployed:** `{address}` on studionet ([explorer](https://explorer-studio.genlayer.com/address/{address}))
+- **Live on studionet:** all four, each with a success and a refusal on chain — [see below](#it-is-live-and-every-refusal-is-on-chain-too)
 - **Specification:** [CONTRACTS.md](CONTRACTS.md)
 - **Decisions and limits:** [DECISIONS.md](DECISIONS.md)
-- **Agreement rules on their own:** [lib/slate_consensus.py](lib/slate_consensus.py)
+- **Agreement rules on their own:** [lib/bracket_consensus.py](lib/bracket_consensus.py)
 - **License:** MIT. Copy the agreement rules; that is what they are for.
+
+---
+
+## It is live, and every refusal is on chain too
+
+Four contracts, eight outcomes. Each one resolved once and refused once, because
+a page showing only successes proves the file compiles and nothing else — and
+refusing is what these primitives are for.
+
+| Contract | Address | Resolved | Refused |
+|---|---|---|---|
+| **Tiebreak** | [`0x9fE538dC…8d6F4667Fe40C4`](https://explorer-studio.genlayer.com/address/0x9fE538dC6e05b8316Cd9E9FE7a6bBF4667Fe40C4) | `verdict(0)` → `a` | `verdict(1)` → `tied`, `tied_pct` `100.0` |
+| **Slate** | [`0x222CD021…aA13A67C9`](https://explorer-studio.genlayer.com/address/0x222CD02132a4f158E3C67E8D0757b88aA13A67C9) | `order(0)` → `0:1\|1:2\|2:3\|3:4` | `order(1)` → `0:1\|1:1\|2:1\|3:1`, `undifferentiated` |
+| **Cutline** | [`0xC4ee53aD…2e2d35b2bB`](https://explorer-studio.genlayer.com/address/0xC4ee53aDfb9569150C7cCfA79590422e2d35b2bB) | `selected(0)` → `0\|1` | `selected(1)` → `""`, `cut_is_arbitrary` |
+| **Winnow** | [`0x4D75f5a5…0217E81f`](https://explorer-studio.genlayer.com/address/0x4D75f5a5505c442f6a781dc05828E0220217E81f) | `accept\|review\|reject\|accept` | `standard_too_vague` |
+
+Every refusal above came from the **same input** as the success beside it, with
+one parameter changed. Slate ranked four proposals cleanly at `closeness 8.0`
+and collapsed all four into one band at `1000`. Cutline selected two at `8.0`
+and refused to cut at all at `1000`, because the line then fell inside a tie.
+Winnow triaged the same four items twice and marked the second run
+`standard_too_vague` when the standard was written vaguely and the review
+ceiling was zero.
+
+Cutline stored its own reason for refusing:
+
+> Item 0 provides precise numerical data, while others rely on subjective
+> feelings or vague marketing language.
+
+The model saw the difference. The contract still declined to draw the line,
+because the line fell inside a band it had already said it would not split.
 
 ---
 

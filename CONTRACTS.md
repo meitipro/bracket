@@ -303,7 +303,7 @@ the useful output is three piles rather than a ranking.
 
 ## The shared library
 
-[`lib/slate_consensus.py`](lib/slate_consensus.py) holds the agreement rules on
+[`lib/bracket_consensus.py`](lib/bracket_consensus.py) holds the agreement rules on
 their own. It is **not** an imported module: a GenLayer contract is a single
 Python file inside the GenVM, with no `pip install` and no cross-file import at
 deploy time, so each contract inlines the helpers it needs. The library exists so

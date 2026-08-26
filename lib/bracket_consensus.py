@@ -1,4 +1,4 @@
-"""The agreement rules of the Slate family, on their own.
+"""The agreement rules of the Bracket family, on their own.
 
 This file is NOT imported by the contracts. A GenLayer contract is a single
 Python file inside the GenVM: there is no pip install and no cross-file import

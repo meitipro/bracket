@@ -45,7 +45,12 @@ deploy() {
 }
 
 CRITERION="which explains the tradeoff more clearly"
-FOUR="alpha proposal|beta proposal|gamma proposal|delta proposal"
+# Real sentences, not placeholders. Four labels with no content give the model
+# nothing to judge, so it scores them differently on every run, the bands differ
+# between nodes and rank() never settles. That cost three failed transactions
+# before the demo data was rewritten -- see DECISIONS.md.
+PROPOSALS="Cuts latency by 40 percent, at the cost of 2x memory per node.|Improves throughput; some additional resource usage is expected.|A faster, more scalable and more reliable pipeline for everyone.|Best-in-class performance with no downsides worth mentioning."
+OUTCOMES="Cut support tickets from 120 to 38 per week over two months.|Reduced onboarding time; teams reported it felt faster.|A modern platform that helps teams work better together.|Response time dropped from 4.2 seconds to 0.9 seconds."
 
 # ---------------------------------------------------------------------------
 gold "Tiebreak"
@@ -81,14 +86,14 @@ gold "  deployed at $SL"
 
 dim "  define() a slate with a tight threshold, so ranks separate"
 genlayer write "$SL" define --args \
-  "which proposal states its tradeoff most clearly" "$FOUR" "2.0" >/dev/null
+  "which proposal states its tradeoff most clearly" "$PROPOSALS" "8.0" >/dev/null
 dim "  rank()   order, band, agree, store"
 genlayer write "$SL" rank  --args 0
 genlayer call  "$SL" order --args 0
 
 dim "  define() a slate with a huge threshold, to put undifferentiated on chain"
 genlayer write "$SL" define --args \
-  "which proposal states its tradeoff most clearly" "$FOUR" "1000" >/dev/null
+  "which proposal states its tradeoff most clearly" "$PROPOSALS" "1000" >/dev/null
 genlayer write "$SL" rank   --args 1 || true
 genlayer call  "$SL" latest --args 1
 
@@ -101,13 +106,13 @@ gold "  deployed at $CU"
 
 dim "  define() a clean cut, k of 2"
 genlayer write "$CU" define --args \
-  "which application shows the clearest measurable outcome" "$FOUR" 2 "2.0" "refuse" >/dev/null
+  "which application shows the clearest measurable outcome" "$OUTCOMES" 2 "8.0" "refuse" >/dev/null
 genlayer write "$CU" select   --args 0
 genlayer call  "$CU" selected --args 0
 
 dim "  define() a cut that can fall inside a tie, to put the refusal on chain"
 genlayer write "$CU" define --args \
-  "which application shows the clearest measurable outcome" "$FOUR" 2 "1000" "refuse" >/dev/null
+  "which application shows the clearest measurable outcome" "$OUTCOMES" 2 "1000" "refuse" >/dev/null
 genlayer write "$CU" select --args 1 || true
 genlayer call  "$CU" latest --args 1
 
@@ -120,13 +125,13 @@ gold "  deployed at $WI"
 
 dim "  define() a batch with a workable review ceiling"
 genlayer write "$WI" define --args \
-  "accept only items that name a measurable outcome" "$FOUR" 50 >/dev/null
+  "accept only items that name a measurable outcome" "$OUTCOMES" 50 >/dev/null
 genlayer write "$WI" triage    --args 0
 genlayer call  "$WI" partition --args 0
 
 dim "  define() a batch with zero tolerance, to put standard_too_vague on chain"
 genlayer write "$WI" define --args \
-  "accept only items that are broadly quite good in some way" "$FOUR" 0 >/dev/null
+  "accept only items that are broadly quite good in some way" "$OUTCOMES" 0 >/dev/null
 genlayer write "$WI" triage --args 1 || true
 genlayer call  "$WI" latest --args 1
 

@@ -290,6 +290,39 @@ Both were settled by reading the pinned SDK on disk rather than the prose.
 
 ---
 
+## What the first real deployment taught
+
+Everything above was learned on a workstation. One thing was only learnable on
+chain, and it cost three failed transactions.
+
+Slate's first `rank()` came back FINALIZED with **all three validators voting
+disagree**. The leader had succeeded; the validators had simply banded the
+scores differently. The demo items were the cause: `alpha proposal`,
+`beta proposal`, `gamma proposal`, `delta proposal` are labels with no content,
+so a model asked which of them "states its tradeoff most clearly" has nothing to
+read and invents a score. Different scores on every run, different bands, no
+agreement.
+
+The refusal case had passed on the same data, which made it look like the
+contract worked. It did not: with `closeness 1000` every score collapses into
+one band, so two nodes agree trivially. Passing there proved nothing.
+
+Two things changed, neither of them in a contract:
+
+- The demo items are now real sentences with a genuine difference in clarity —
+  one names a number and a cost, one is marketing. A model reads them the same
+  way twice.
+- `closeness` went from `2.0` to `8.0`. On scores out of 100, a threshold of 2
+  is inside the noise of the model's own scoring; the bands were being decided
+  by rounding rather than by the items.
+
+This is not a flaw in the design — it is the design working. Slate's whole
+premise is that a coarser structure settles where a finer one does not, and the
+threshold is the dial. But it means **`closeness` has to be chosen against the
+spread you actually expect**, and a slate whose items carry no information will
+refuse or fail no matter what it is set to. `scripts/deploy.sh` now carries the
+values that settled, so the script and the chain agree.
+
 ## Honest limits
 
 **Tiebreak cannot detect a bias both orders share.** It varies presentation
